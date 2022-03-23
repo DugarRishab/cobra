@@ -1,0 +1,41 @@
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+body{
+	background-color: rgb(17, 17, 17);
+}
+.game-body{
+	background-color: rgb(17, 17, 17);
+	height: 90vh;
+	width: 100vw;
+	margin: 10vh 0vw 0vh 0vw;
+	border: 2px solid rgb(162, 255, 23);
+	
+}
+.snake{
+	padding: 10px;
+	border: 2px solid red;
+	height: fit-content;
+	width: fit-content;
+}
+.snake .unit{
+	width: 30px;
+	height: 30px;
+	background: rgb(162, 255, 23);
+	border-radius: 5px;
+	margin: auto;
+
+	border: 2px solid red;
+}
+.fruit{
+	padding: 10px;
+	border: 2px solid red;
+	height: fit-content;
+	width: fit-content;
+}
+.fruit img{
+	height: 30px;
+	width: 30px;
+}
