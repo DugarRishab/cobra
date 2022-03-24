@@ -10,15 +10,18 @@ body{
 	background-color: rgb(17, 17, 17);
 	height: 90vh;
 	width: 100vw;
-	margin: 10vh 0vw 0vh 0vw;
+	margin: auto;
+	margin-top: 10vh;
 	border: 2px solid rgb(162, 255, 23);
-	
+	position: relative;
 }
 .snake{
 	padding: 10px;
-	border: 2px solid red;
+	border: 0px solid red;
 	height: fit-content;
 	width: fit-content;
+	-transition: 2s all linear;
+	position: relative;
 }
 .snake .unit{
 	width: 30px;
@@ -26,8 +29,17 @@ body{
 	background: rgb(162, 255, 23);
 	border-radius: 5px;
 	margin: auto;
-
-	border: 2px solid red;
+	position: absolute;
+	border: 0px solid red;
+}
+.snake .unit1{
+	left: 0;
+}
+.snake .unit2{
+	left: 30px;
+}
+.snake .unit3{
+	left: 60px;
 }
 .fruit{
 	padding: 10px;
