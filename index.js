@@ -1,6 +1,7 @@
 window.addEventListener("load", () => {
 	determineGrid();
 	unitManager();
+	moveHead();
 	window.addEventListener("resize", () => {
 		determineGrid();
 		//moveUnit();
@@ -51,11 +52,21 @@ function forEachWithCallback(callback) {
 }
 Array.prototype.forEachWithCallback = forEachWithCallback;
 
-const createTurn = (turns) => {
+const createTurn = (unit, turns, turn, xp, yp) => {
 	window.addEventListener("keyup", (e) => {
-		console.log(e.key);
+		if (e.code === 'ArrowDown') {
+			turns.push({
+				axis: 'y',
+				position: 100000
+			});
+			console.log('turns: ', turns);
+			if (unit.getAttribute('id') == 'unit1') {
+				turn.position = xp;
+			}
+		}
 		console.log(e.code);
-	})
+	});
+	return turn;
 }
 
 const moveUnit = async (unit) => {
@@ -64,10 +75,6 @@ const moveUnit = async (unit) => {
 	//const units = snake.querySelectorAll(".unit");
 	console.log('unit', unit);
 	
-	// units.forEach(unit => {
-	// 	unit.turns = turns;
-	// 	console.log(unit);
-	// });
 	const turns = [
 		{
 			id: 1,
@@ -95,12 +102,20 @@ const moveUnit = async (unit) => {
 				xp = xp + ((turn.position - xp) / Math.abs(turn.position - xp));
 				//console.log("moving...", xp);
 				unit.style.left = xp + 'px';
+				
 				if (xp == turn.position) {
 					clearInterval(interval);
 					next();
 				}
+				// window.addEventListener("keyup", (e) => {
+				// 	clearInterval(interval);
+				// 	turn = createTurn(unit, turns, turn, xp, yp);
+				// 	next();
+				// });
+				
 			}, speed);
 		}
+		turn = createTurn(unit, turns, turn, xp, yp);
 		if (turn.axis === 'y') {
 			const interval = setInterval(() => {
 				//console.log("moving...");
@@ -108,28 +123,32 @@ const moveUnit = async (unit) => {
 				yp = yp + ((turn.position - yp) / Math.abs(turn.position - yp));
 				//console.log("moving...", yp);
 				unit.style.top = yp + 'px';
+				//turn = createTurn(turns, turn, xp, yp);
 				if (yp == turn.position) {
 					clearInterval(interval);
 					next();
 				}
+				// window.addEventListener("keyup", (e) => {
+				// 	clearInterval(interval);
+				// 	turn = createTurn(unit, turns, turn, xp, yp);
+				// 	next();
+				// });
 			}, speed);
 		}
 		
-		window.addEventListener("keyup", (e) => {
-			if (e.code === 'ArrowDown') {
-				turns.push({
-					axis: 'y',
-					position: 100000
-				});
-				console.log('turns: ', turns);
-				if (unit.getAttribute('id') == 'unit1') {
-					turns[turns.length - 2].position = xp;
-				}
-			}
-			console.log(e.code);
-			
-		
-		});
+		// window.addEventListener("keyup", (e) => {
+		// 	if (e.code === 'ArrowDown') {
+		// 		turns.push({
+		// 			axis: 'y',
+		// 			position: 100000
+		// 		});
+		// 		console.log('turns: ', turns);
+		// 		if (unit.getAttribute('id') == 'unit1') {
+		// 			turn.position = xp;
+		// 		}
+		// 	}
+		// 	console.log(e.code);
+		// });
 		
 
 
@@ -146,7 +165,7 @@ const unitManager = () => {
 
 	units.forEach(unit => {
 
-		console.log(unit.style);
+		//console.log(unit.style);
 		moveUnit(unit);
 	});
 }
@@ -164,3 +183,51 @@ const unitManager = () => {
 // 	});
 
 // }
+const moveHead = () => {
+	const gameBody = document.querySelector(".game-body");
+	const snake = document.querySelector(".snake");
+	const head = snake.querySelector(".head");
+
+	let xp = +(head.style.left.split('p')[0]);
+	let yp = +(head.style.top.split('p')[0]);
+	let direction = '+x';
+
+	setInterval(() => {
+
+		if (direction === '+y') {
+			yp = yp - 1 ;
+			head.style.top = yp + 'px';
+		}
+		if (direction === '+x') {
+			xp = xp + 1 ;
+			head.style.left = xp + 'px';
+		}
+		if (direction === '-y') {
+			yp = yp + 1 ;
+			head.style.top = yp + 'px';
+		}
+		if (direction === '-x') {
+			xp = xp - 1 ;
+			head.style.left = xp + 'px';
+		}
+		window.addEventListener("keyup", (e) => {
+			
+			if (e.code === 'ArrowDown') {
+				direction = "-y";	
+			}
+			if (e.code === 'ArrowUp') {
+				direction = "+y";
+				
+			}
+			if (e.code === 'ArrowLeft') {
+				direction = "-x";
+			}
+			if (e.code === 'ArrowRight') {
+				direction = "+x";	
+			}
+			console.log(e.code);
+		});
+		
+
+	}, speed)
+}

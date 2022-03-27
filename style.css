@@ -32,13 +32,23 @@ body{
 	position: absolute;
 	border: 0px solid red;
 }
-.snake .unit1{
-	left: 0;
+.snake .head{
+	width: 30px;
+	height: 30px;
+	background: rgb(162, 255, 23);
+	border-radius: 5px;
+	margin: auto;
+	position: absolute;
+	border: 0px solid red;
+	background: rgb(141, 223, 19);
 }
-.snake .unit2{
+.snake .unit1{
 	left: 30px;
 }
-.snake .unit3{
+.snake .unit2{
+	left: 0px;
+}
+.snake .head{
 	left: 60px;
 }
 .fruit{
