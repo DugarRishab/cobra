@@ -24,23 +24,25 @@ body{
 	position: relative;
 }
 .snake .unit{
-	width: 30px;
-	height: 30px;
+	width: 10px;
+	height: 10px;
 	background: rgb(162, 255, 23);
-	border-radius: 5px;
+	border-radius: 1px;
 	margin: auto;
 	position: absolute;
 	border: 0px solid red;
+	box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.15), inset -2px -2px 5px rgba(0, 0, 0, 0.15);;
 }
 .snake .head{
-	width: 30px;
-	height: 30px;
+	width: 10px;
+	height: 10px;
 	background: rgb(162, 255, 23);
-	border-radius: 5px;
+	border-radius: 1px;
 	margin: auto;
 	position: absolute;
 	border: 0px solid red;
 	background: rgb(141, 223, 19);
+	box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.25);
 }
 .snake .unit1{
 	left: 30px;
