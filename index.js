@@ -1,6 +1,7 @@
 window.addEventListener("load", () => {
 	determineGrid();
 	//unitManager();
+	//speedIncrementor();
 	moveHead();
 	moveUnit();
 	window.addEventListener("resize", () => {
@@ -8,12 +9,14 @@ window.addEventListener("load", () => {
 		//moveUnit();
 	});
 
+	//speedIncrementor();
+
 
 });
 
 const fruits = ['apple', 'mango', 'banana', 'cherry', 'pineapple', 'strawberry'];
 const points = [10, 50, 10, 20, 20, 100];
-const speed = 20; // in ms // time to travel 1px
+let speed = 15; // in ms // time to travel 1px
 const globalTurns = [
 	{
 		id: 1,
@@ -22,7 +25,6 @@ const globalTurns = [
 		position: 10000
 	}
 ];
-
 const numberOfFruits = () => {
 	
 }
@@ -46,7 +48,6 @@ const determineGrid = () => {
 	gameBody.style.height = `${columns * 40}px`;
 	// gameBody.style.margin = 'auto';
 }
-
 function forEachWithCallback(callback) {
 	const arrayCopy = this;
 	let index = 0;
@@ -60,138 +61,6 @@ function forEachWithCallback(callback) {
 }
 Array.prototype.forEachWithCallback = forEachWithCallback;
 
-// const createTurn = (unit, turns, turn, xp, yp) => {
-// 	window.addEventListener("keyup", (e) => {
-// 		if (e.code === 'ArrowDown') {
-// 			turns.push({
-// 				axis: 'y',
-// 				position: 100000
-// 			});
-// 			console.log('turns: ', turns);
-// 			if (unit.getAttribute('id') == 'unit1') {
-// 				turn.position = xp;
-// 			}
-// 		}
-// 		console.log(e.code);
-// 	});
-// 	return turn;
-// }
-
-// const moveUnit = async (unit) => {
-// 	const gameBody = document.querySelector(".game-body");
-// 	const snake = document.querySelector(".snake");
-// 	//const units = snake.querySelectorAll(".unit");
-// 	console.log('unit', unit);
-	
-// 	// const turns = [
-// 	// 	{
-// 	// 		id: 1,
-// 	// 		direction: "right",
-// 	// 		axis: 'x',
-// 	// 		position: 10000
-// 	// 	}
-// 	// ];
-// 	const turns = globalTurns;;
-
-// 	//createTurn(turns);
-
-// 	//console.log("turns", turns);
-
-// 	let xp = +(unit.style.left.split('p')[0]);
-// 	let yp = +(unit.style.top.split('p')[0]);
-
-// 	//console.log(unit.style.left);
-
-// 	await turns.forEachWithCallback((turn, i, next) => {
-		
-// 		if (turn.axis === 'x') {
-// 			const interval = setInterval(() => {
-// 				//console.log("moving...");
-					
-// 				xp = xp + ((turn.position - xp) / Math.abs(turn.position - xp));
-// 				//console.log("moving...", xp);
-// 				unit.style.left = xp + 'px';
-				
-// 				if (xp == turn.position) {
-// 					clearInterval(interval);
-// 					next();
-// 				}
-// 				// window.addEventListener("keyup", (e) => {
-// 				// 	clearInterval(interval);
-// 				// 	turn = createTurn(unit, turns, turn, xp, yp);
-// 				// 	next();
-// 				// });
-				
-// 			}, speed);
-// 		}
-// 		turn = createTurn(unit, turns, turn, xp, yp);
-// 		if (turn.axis === 'y') {
-// 			const interval = setInterval(() => {
-// 				//console.log("moving...");
-					
-// 				yp = yp + ((turn.position - yp) / Math.abs(turn.position - yp));
-// 				//console.log("moving...", yp);
-// 				unit.style.top = yp + 'px';
-// 				//turn = createTurn(turns, turn, xp, yp);
-// 				if (yp == turn.position) {
-// 					clearInterval(interval);
-// 					next();
-// 				}
-// 				// window.addEventListener("keyup", (e) => {
-// 				// 	clearInterval(interval);
-// 				// 	turn = createTurn(unit, turns, turn, xp, yp);
-// 				// 	next();
-// 				// });
-// 			}, speed);
-// 		}
-		
-// 		// window.addEventListener("keyup", (e) => {
-// 		// 	if (e.code === 'ArrowDown') {
-// 		// 		turns.push({
-// 		// 			axis: 'y',
-// 		// 			position: 100000
-// 		// 		});
-// 		// 		console.log('turns: ', turns);
-// 		// 		if (unit.getAttribute('id') == 'unit1') {
-// 		// 			turn.position = xp;
-// 		// 		}
-// 		// 	}
-// 		// 	console.log(e.code);
-// 		// });
-		
-
-
-// 	});
-	
-	
-// }
-// const unitManager = () => {
-// 	const gameBody = document.querySelector(".game-body");
-// 	const snake = document.querySelector(".snake");
-// 	const units = snake.querySelectorAll(".unit");
-
-// 	// positioningUnit();
-
-// 	units.forEach(unit => {
-
-// 		//console.log(unit.style);
-// 		moveUnit(unit);
-// 	});
-// }
-// const positioningUnit = () => {
-// 	const snake = document.querySelector(".snake");
-// 	const units = snake.querySelectorAll(".unit");
-
-// 	let initialPosition = 0;
-// 	units.forEach(unit => {
-
-// 		unit.style.left = `${initialPosition * 30}px`;
-// 		initialPosition++;
-// 		console.log(unit.style);
-// 		moveUnit(unit);
-// 	});
-
-// }
 const moveHead = () => {
 	const gameBody = document.querySelector(".game-body");
 	const snake = document.querySelector(".snake");
@@ -341,14 +210,79 @@ const moveHead = () => {
 		
 	// });
 }
-
-
-
 const moveUnit = () => {
-	const snake = document.querySelector(".snake");
-	const units = snake.querySelectorAll(".unit");
+	const snake = document.getElementById("snake");
+	let units = snake.querySelectorAll(".unit");
 
 	let unitTurnCount = [];
+
+
+	const increaseUnit = () => {
+		window.addEventListener("keyup", (e) => {
+			if (e.code == 'Enter') {
+
+				const turns = [...globalTurns];
+				const extraUnit = document.createElement("div");
+				extraUnit.classList.add("unit");
+
+				const currentLastTurn = turns[unitTurnCount[unitTurnCount.length - 1]];
+				//const nextTurn = turns[unitTurnCount[unitTurnCount.length - 1] + 1];
+				const xp = +(units[units.length - 1].style.left.split('p')[0]);
+				const yp = +(units[units.length - 1].style.top.split('p')[0]);
+
+				if (currentLastTurn.axis == 'x') {
+					if (currentLastTurn.position - xp > 0) {
+						extraUnit.style.left = `${xp - 10}px`;
+						extraUnit.style.top = `${yp}px`; 
+					}
+					else if (currentLastTurn.position - xp < 0) {
+						extraUnit.style.left = `${xp + 10}px`;
+						extraUnit.style.top = `${yp}px`;
+					}
+					else {
+						setTimeout(() => {
+							extraUnit.style.left = `${xp}px`;
+							extraUnit.style.top = `${yp}px`;
+						}, speed)
+					}
+					
+				}
+				else if (currentLastTurn.axis == 'y') {
+					if (currentLastTurn.position - yp > 0) {
+						extraUnit.style.left = `${xp}px`;
+						extraUnit.style.top = `${yp - 10}px`; 
+					}
+					else if (currentLastTurn.position - xp < 0) {
+						extraUnit.style.left = `${xp}px`;
+						extraUnit.style.top = `${yp + 10}px`;
+					}
+					else {
+						setTimeout(() => {
+							extraUnit.style.left = `${xp}px`;
+							extraUnit.style.top = `${yp}px`;
+						}, speed)
+					}
+					
+				}
+				
+				
+				// extraUnit.style.left = `${xp + 10}px`;
+				// extraUnit.style.top = `${yp}px`; 
+				
+	
+				snake.appendChild(extraUnit);
+				//
+				// Array.from(units).push(extraUnit);
+				// units[units.length] == extraUnit;
+				units = snake.querySelectorAll(".unit");
+				unitTurnCount.push(unitTurnCount[unitTurnCount.length - 1]);
+
+			}
+		})
+	}
+
+
+	increaseUnit();
 
 	units.forEach(unit => {
 		unitTurnCount.push(0);
@@ -387,5 +321,17 @@ const moveUnit = () => {
 		});
 		
 	}, speed);
-}
 
+	
+
+	
+}
+const speedIncrementor = () => {
+	setInterval(() => {
+		speed -= 2;
+		console.log("speed: ", speed);
+	}, 10*1000)
+}
+const unitAutoPosition = () => {
+	
+}
