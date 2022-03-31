@@ -2,6 +2,7 @@ window.addEventListener("load", () => {
 	determineGrid();
 	//unitManager();
 	//speedIncrementor();
+	numberOfFruits();
 	moveHead();
 	moveUnit();
 	window.addEventListener("resize", () => {
@@ -10,7 +11,6 @@ window.addEventListener("load", () => {
 	});
 
 	//speedIncrementor();
-
 
 });
 
@@ -26,11 +26,61 @@ const globalTurns = [
 	}
 ];
 const numberOfFruits = () => {
+	let number = (Math.round(Math.random() * 10) % 5) + 1;
+	const fruitsElement = document.querySelectorAll(".fruits .fruit");
+	const currentNumOfFruits = fruitsElement.length;
 	
+	number = number - currentNumOfFruits;
+	console.log(number, currentNumOfFruits);
+	while (number > 0) {
+		const random = Math.random();
+		let fruitName;
+		if (random <= 0.6) {
+			const random2 = (Math.floor(Math.random() * 10) % 3);
+			fruitName = fruits[random2];
+			createFruit(fruitName);
+			
+		}
+		else if (random <= 0.9) {
+			const random2 = (Math.floor(Math.random() * 10) % 2) + 3;
+			fruitName = fruits[random2];
+			createFruit(fruitName);
+		}
+		else {
+			//const random2 = (Math.floor(Math.random() * 10) % 2) + 3;
+			fruitName = fruits[fruits.length - 1];
+			createFruit(fruitName);
+		}
+		console.log("fruit: ", fruitName);
+		
+		number--;
+	}
 }
+
+const createFruit = (fruitName) => {
+	const newFruit = document.createElement("div");
+	const newFruitImage = document.createElement("img");
+
+	newFruit.classList.add("fruit");
+	newFruitImage.src = `./img/${fruitName}.png`;
+
+	const gameBody = document.querySelector(".game-body");
+	const xLimit = +(gameBody.style.width.split('p')[0]) - 40;
+	const yLimit = +(gameBody.style.height.split('p')[0]) - 40;
+
+	let xp = Math.random() * xLimit;
+	let yp = Math.random() * yLimit;
+
+	newFruit.style.top = `${yp}px`;
+	newFruit.style.left = `${xp}px`;
+
+	newFruit.appendChild(newFruitImage);
+	document.querySelector(".fruits").appendChild(newFruit);
+}
+
 const determineGrid = () => {
 	let screenWidth = window.innerWidth;
-	let screenHeight = window.innerHeight - (window.innerHeight / 10);
+	let screenHeight = Math.round(window.innerHeight - (window.innerHeight / 10));
 
 	let columns, rows;
 

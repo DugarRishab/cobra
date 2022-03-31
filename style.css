@@ -53,7 +53,13 @@ body{
 .snake .head{
 	left: 60px;
 }
+.fruits{
+	position: relative;
+	border: 2px solid blue;
+
+}
 .fruit{
+	position: absolute;
 	padding: 5px;
 	border: 2px solid red;
 	height: fit-content;
