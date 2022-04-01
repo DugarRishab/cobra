@@ -341,9 +341,9 @@ const is_colliding = (div1, div2) => {
 		+div1.style.left.split("p")[0] + +div1.style.width.split("p")[0];
 
 	const d2_top = +div2.style.top.split("p")[0] + 30;
-	const d2_bottom = +div2.style.top.split("p")[0] + 30 + 30;
+	const d2_bottom = +div2.style.top.split("p")[0] + 40 + 30;
 	const d2_left = +div2.style.left.split("p")[0];
-	const d2_right = +div2.style.left.split("p")[0] + 30;
+	const d2_right = +div2.style.left.split("p")[0] + 40;
 
 	//console.log(d1_top, );
 
@@ -363,7 +363,7 @@ const is_colliding = (div1, div2) => {
 	}
 	if (
 		d1_bottom > d2_top &&
-		d2_bottom < d1_bottom &&
+		d1_bottom < d2_bottom &&
 		((d1_left > d2_left && d1_left < d2_right) ||
 			(d1_right > d2_left && d1_right < d2_right))
 	) {
