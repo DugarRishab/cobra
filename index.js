@@ -12,47 +12,44 @@ function forEachWithCallback(callback) {
 Array.prototype.forEachWithCallback = forEachWithCallback;
 
 function Timer(fn, t) {
-    var timerObj = setInterval(fn, t);
+	// <<- Custom setInterval function which allows reset of the interval
+	var timerObj = setInterval(fn, t);
 
-    this.stop = function() {
-        if (timerObj) {
-            clearInterval(timerObj);
-            timerObj = null;
-        }
-        return this;
-    }
+	this.stop = function () {
+		if (timerObj) {
+			clearInterval(timerObj);
+			timerObj = null;
+		}
+		return this;
+	};
 
-    // start timer using current settings (if it's not already running)
-    this.start = function() {
-        if (!timerObj) {
-            this.stop();
-            timerObj = setInterval(fn, t);
-        }
-        return this;
-    }
+	// start timer using current settings (if it's not already running)
+	this.start = function () {
+		if (!timerObj) {
+			this.stop();
+			timerObj = setInterval(fn, t);
+		}
+		return this;
+	};
 
-    // start with new or original interval, stop current interval
-    this.reset = function(newT = t) {
-        t = newT;
-        return this.stop().start();
-    }
+	// start with new or original interval, stop current interval
+	this.reset = function (newT = t) {
+		t = newT;
+		return this.stop().start();
+	};
 }
 window.addEventListener("load", () => {
 	determineGrid();
-	//unitManager();
 	speedIncrementor();
 	numberOfFruits();
-	//checkFruitEaten();
 	moveHead();
 	moveUnit();
-	//is_colliding();
 	window.addEventListener("resize", () => {
 		determineGrid();
-		//moveUnit();
 	});
-
-	//speedIncrementor();
+	//stopAllMovement();
 });
+
 // GLOBAL VARIABLES ->
 const fruits = [
 	"apple",
@@ -62,10 +59,11 @@ const fruits = [
 	"pineapple",
 	"strawberry",
 ];
-const points = [10, 50, 10, 20, 20, 100];
+const points = [10, 10, 10, 20, 20, 50];
 let speed = 16; // in ms // time to travel 1px
 const accTime = 10 * 1000; // in ms // time after which speed will increase
 const acc = 0.5; // in ms // time by which speed will increase
+let moveUnitByInterval, moveHeadByInterval;
 
 const globalTurns = [
 	{
@@ -158,26 +156,7 @@ const moveHead = () => {
 	let yp = +head.style.top.split("p")[0];
 	let direction = "+x";
 
-	// const moveHeadByInterval = setInterval(() => {
-	// 	if (direction === "+y") {
-	// 		yp = yp - 1;
-	// 		head.style.top = yp + "px";
-	// 	}
-	// 	if (direction === "+x") {
-	// 		xp = xp + 1;
-	// 		head.style.left = xp + "px";
-	// 	}
-	// 	if (direction === "-y") {
-	// 		yp = yp + 1;
-	// 		head.style.top = yp + "px";
-	// 	}
-	// 	if (direction === "-x") {
-	// 		xp = xp - 1;
-	// 		head.style.left = xp + "px";
-	// 	}
-	// }, speed);
-
-	const moveHeadByInterval = new Timer(() => {
+	moveHeadByInterval = new Timer(() => {
 		if (direction === "+y") {
 			yp = yp - 1;
 			head.style.top = yp + "px";
@@ -200,10 +179,8 @@ const moveHead = () => {
 		moveHeadByInterval.reset(speed);
 	}, accTime);
 
-	//speedIncrementor(moveHeadByInterval);
-
 	window.addEventListener("keyup", (e) => {
-		if (e.code === "ArrowDown") {
+		if (e.code === "ArrowDown" && direction != "+y") {
 			direction = "-y";
 			const currentTurn = globalTurns[globalTurns.length - 1];
 			if (currentTurn.axis == "x") {
@@ -215,9 +192,10 @@ const moveHead = () => {
 				axis: "y",
 				position: 100000,
 			});
-			console.log(globalTurns);
+
+			//console.log(globalTurns);
 		}
-		if (e.code === "ArrowUp") {
+		if (e.code === "ArrowUp" && direction != "-y") {
 			direction = "+y";
 			const currentTurn = globalTurns[globalTurns.length - 1];
 			if (currentTurn.axis == "x") {
@@ -230,7 +208,7 @@ const moveHead = () => {
 				position: -100000,
 			});
 		}
-		if (e.code === "ArrowLeft") {
+		if (e.code === "ArrowLeft" && direction != "+x") {
 			direction = "-x";
 			const currentTurn = globalTurns[globalTurns.length - 1];
 			if (currentTurn.axis == "x") {
@@ -243,7 +221,7 @@ const moveHead = () => {
 				position: -100000,
 			});
 		}
-		if (e.code === "ArrowRight") {
+		if (e.code === "ArrowRight" && direction != "-x") {
 			direction = "+x";
 			const currentTurn = globalTurns[globalTurns.length - 1];
 			if (currentTurn.axis == "x") {
@@ -258,6 +236,8 @@ const moveHead = () => {
 		}
 		console.log(e.code);
 	});
+
+	
 };
 const moveUnit = () => {
 	const snake = document.getElementById("snake");
@@ -266,7 +246,6 @@ const moveUnit = () => {
 	let unitTurnCount = [];
 
 	const increaseUnit = () => {
-		
 		const turns = [...globalTurns];
 		const extraUnit = document.createElement("div");
 		extraUnit.classList.add("unit");
@@ -314,48 +293,13 @@ const moveUnit = () => {
 		units = snake.querySelectorAll(".unit");
 		unitTurnCount.push(unitTurnCount[unitTurnCount.length - 1]);
 	};
-
-	//increaseUnit();
-
 	checkFruitEaten(increaseUnit);
 
 	units.forEach((unit) => {
 		unitTurnCount.push(0);
 	});
 
-	// const moveUnitByInterval = setInterval(() => {
-	// 	const turns = [...globalTurns];
-
-	// 	let unitNumber = 0;
-	// 	units.forEach((unit) => {
-	// 		const turn = turns[unitTurnCount[unitNumber]];
-
-	// 		let xp = +unit.style.left.split("p")[0];
-	// 		let yp = +unit.style.top.split("p")[0];
-
-	// 		if (turn.axis === "x") {
-	// 			xp = xp + (turn.position - xp) / Math.abs(turn.position - xp);
-	// 			unit.style.left = xp + "px";
-
-	// 			if (turn.position == xp) {
-	// 				unitTurnCount[unitNumber]++;
-	// 			}
-	// 		}
-
-	// 		if (turn.axis === "y") {
-	// 			yp = yp + (turn.position - yp) / Math.abs(turn.position - yp);
-	// 			unit.style.top = yp + "px";
-
-	// 			if (turn.position == yp) {
-	// 				unitTurnCount[unitNumber]++;
-	// 			}
-	// 		}
-
-	// 		unitNumber++;
-	// 	});
-	// }, speed);
-
-	const moveUnitByInterval = new Timer(() => {
+	moveUnitByInterval = new Timer(() => {
 		const turns = [...globalTurns];
 
 		let unitNumber = 0;
@@ -390,26 +334,18 @@ const moveUnit = () => {
 	setInterval(() => {
 		moveUnitByInterval.reset(speed);
 	}, accTime);
-
-	//speedIncrementor(moveUnitByInterval);
 };
 const speedIncrementor = () => {
 	const interval = setInterval(() => {
 		speed -= acc;
 		console.log("speed: ", speed);
-		
-		//interval.reset(speed);
+
 		if (speed <= 5) {
 			clearInterval(interval);
 		}
-
 	}, accTime);
 };
-
-const unitAutoPosition = () => {};
-
 const checkFruitEaten = (increaseUnit) => {
-
 	const interval = new Timer(() => {
 		const fruitElements = document.querySelectorAll(".fruit");
 		const snakeHead = document.querySelector(".head");
@@ -472,3 +408,65 @@ const is_colliding = (div1, div2) => {
 
 	return colliding;
 };
+const snakeIsColliding = (div1, div2) => {
+	const d1_top = +div1.style.top.split("p")[0];
+	const d1_bottom =
+		+div1.style.top.split("p")[0] + +div1.style.height.split("p")[0];
+	const d1_left = +div1.style.left.split("p")[0];
+	const d1_right =
+		+div1.style.left.split("p")[0] + +div1.style.width.split("p")[0];
+
+	const d2_top = +div2.style.top.split("p")[0];
+	const d2_bottom = +div2.style.top.split("p")[0] + 10;
+	const d2_left = +div2.style.left.split("p")[0];
+	const d2_right = +div2.style.left.split("p")[0] + 10;
+
+	//console.log(d1_top, );
+
+	let colliding = false;
+
+	if (
+		d1_top > d2_top &&
+		d1_top < d2_bottom &&
+		((d1_left > d2_left && d1_left < d2_right) ||
+			(d1_right > d2_left && d1_right < d2_right))
+	) {
+		colliding = true;
+		// console.log(d1_top, d2_top);
+		// console.log(d1_left, d2_left);
+		// console.log(d1_right, d2_right);
+		// console.log(d1_bottom, d2_bottom);
+	}
+	if (
+		d1_bottom > d2_top &&
+		d1_bottom < d2_bottom &&
+		((d1_left > d2_left && d1_left < d2_right) ||
+			(d1_right > d2_left && d1_right < d2_right))
+	) {
+		colliding = true;
+		console.log("true");
+	}
+
+	return colliding;
+};
+const stopAllMovement = () => {
+	const interval = new Timer(() => {
+		
+		const snakeHead = document.querySelector(".head");
+		const units = document.querySelectorAll(".unit");
+
+		units.forEach((unit) => {
+			const isColliding = snakeIsColliding(snakeHead, unit);
+
+			if (isColliding) {
+				console.log("collision: ", isColliding);
+				moveHeadByInterval.stop();
+				moveUnitByInterval.stop();
+			}
+		});
+	}, speed);
+
+	setInterval(() => {
+		interval.reset(speed);
+	}, accTime);
+}
