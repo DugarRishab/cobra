@@ -11,12 +11,38 @@ function forEachWithCallback(callback) {
 }
 Array.prototype.forEachWithCallback = forEachWithCallback;
 
+function Timer(fn, t) {
+    var timerObj = setInterval(fn, t);
+
+    this.stop = function() {
+        if (timerObj) {
+            clearInterval(timerObj);
+            timerObj = null;
+        }
+        return this;
+    }
+
+    // start timer using current settings (if it's not already running)
+    this.start = function() {
+        if (!timerObj) {
+            this.stop();
+            timerObj = setInterval(fn, t);
+        }
+        return this;
+    }
+
+    // start with new or original interval, stop current interval
+    this.reset = function(newT = t) {
+        t = newT;
+        return this.stop().start();
+    }
+}
 window.addEventListener("load", () => {
 	determineGrid();
 	//unitManager();
-	//speedIncrementor();
+	speedIncrementor();
 	numberOfFruits();
-	checkFruitEaten();
+	//checkFruitEaten();
 	moveHead();
 	moveUnit();
 	//is_colliding();
@@ -37,7 +63,10 @@ const fruits = [
 	"strawberry",
 ];
 const points = [10, 50, 10, 20, 20, 100];
-let speed = 15; // in ms // time to travel 1px
+let speed = 16; // in ms // time to travel 1px
+const accTime = 10 * 1000; // in ms // time after which speed will increase
+const acc = 0.5; // in ms // time by which speed will increase
+
 const globalTurns = [
 	{
 		id: 1,
@@ -129,7 +158,26 @@ const moveHead = () => {
 	let yp = +head.style.top.split("p")[0];
 	let direction = "+x";
 
-	setInterval(() => {
+	// const moveHeadByInterval = setInterval(() => {
+	// 	if (direction === "+y") {
+	// 		yp = yp - 1;
+	// 		head.style.top = yp + "px";
+	// 	}
+	// 	if (direction === "+x") {
+	// 		xp = xp + 1;
+	// 		head.style.left = xp + "px";
+	// 	}
+	// 	if (direction === "-y") {
+	// 		yp = yp + 1;
+	// 		head.style.top = yp + "px";
+	// 	}
+	// 	if (direction === "-x") {
+	// 		xp = xp - 1;
+	// 		head.style.left = xp + "px";
+	// 	}
+	// }, speed);
+
+	const moveHeadByInterval = new Timer(() => {
 		if (direction === "+y") {
 			yp = yp - 1;
 			head.style.top = yp + "px";
@@ -147,6 +195,12 @@ const moveHead = () => {
 			head.style.left = xp + "px";
 		}
 	}, speed);
+
+	setInterval(() => {
+		moveHeadByInterval.reset(speed);
+	}, accTime);
+
+	//speedIncrementor(moveHeadByInterval);
 
 	window.addEventListener("keyup", (e) => {
 		if (e.code === "ArrowDown") {
@@ -212,12 +266,7 @@ const moveUnit = () => {
 	let unitTurnCount = [];
 
 	const increaseUnit = () => {
-		// window.addEventListener("keyup", (e) => {
-		// 	if (e.code == "Enter") {
-
-		// 	}
-		// });
-
+		
 		const turns = [...globalTurns];
 		const extraUnit = document.createElement("div");
 		extraUnit.classList.add("unit");
@@ -274,7 +323,39 @@ const moveUnit = () => {
 		unitTurnCount.push(0);
 	});
 
-	setInterval(() => {
+	// const moveUnitByInterval = setInterval(() => {
+	// 	const turns = [...globalTurns];
+
+	// 	let unitNumber = 0;
+	// 	units.forEach((unit) => {
+	// 		const turn = turns[unitTurnCount[unitNumber]];
+
+	// 		let xp = +unit.style.left.split("p")[0];
+	// 		let yp = +unit.style.top.split("p")[0];
+
+	// 		if (turn.axis === "x") {
+	// 			xp = xp + (turn.position - xp) / Math.abs(turn.position - xp);
+	// 			unit.style.left = xp + "px";
+
+	// 			if (turn.position == xp) {
+	// 				unitTurnCount[unitNumber]++;
+	// 			}
+	// 		}
+
+	// 		if (turn.axis === "y") {
+	// 			yp = yp + (turn.position - yp) / Math.abs(turn.position - yp);
+	// 			unit.style.top = yp + "px";
+
+	// 			if (turn.position == yp) {
+	// 				unitTurnCount[unitNumber]++;
+	// 			}
+	// 		}
+
+	// 		unitNumber++;
+	// 	});
+	// }, speed);
+
+	const moveUnitByInterval = new Timer(() => {
 		const turns = [...globalTurns];
 
 		let unitNumber = 0;
@@ -305,17 +386,31 @@ const moveUnit = () => {
 			unitNumber++;
 		});
 	}, speed);
+
+	setInterval(() => {
+		moveUnitByInterval.reset(speed);
+	}, accTime);
+
+	//speedIncrementor(moveUnitByInterval);
 };
 const speedIncrementor = () => {
-	setInterval(() => {
-		speed -= 2;
+	const interval = setInterval(() => {
+		speed -= acc;
 		console.log("speed: ", speed);
-	}, 10 * 1000);
+		
+		//interval.reset(speed);
+		if (speed <= 5) {
+			clearInterval(interval);
+		}
+
+	}, accTime);
 };
+
 const unitAutoPosition = () => {};
 
 const checkFruitEaten = (increaseUnit) => {
-	setInterval(() => {
+
+	const interval = new Timer(() => {
 		const fruitElements = document.querySelectorAll(".fruit");
 		const snakeHead = document.querySelector(".head");
 
@@ -331,6 +426,10 @@ const checkFruitEaten = (increaseUnit) => {
 			}
 		});
 	}, speed);
+
+	setInterval(() => {
+		interval.reset(speed);
+	}, accTime);
 };
 const is_colliding = (div1, div2) => {
 	const d1_top = +div1.style.top.split("p")[0];
@@ -356,10 +455,10 @@ const is_colliding = (div1, div2) => {
 			(d1_right > d2_left && d1_right < d2_right))
 	) {
 		colliding = true;
-		console.log(d1_top, d2_top);
-		console.log(d1_left, d2_left);
-		console.log(d1_right, d2_right);
-		console.log(d1_bottom, d2_bottom);
+		// console.log(d1_top, d2_top);
+		// console.log(d1_left, d2_left);
+		// console.log(d1_right, d2_right);
+		// console.log(d1_bottom, d2_bottom);
 	}
 	if (
 		d1_bottom > d2_top &&
