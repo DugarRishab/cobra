@@ -39,6 +39,7 @@ function Timer(fn, t) {
 	};
 }
 window.addEventListener("load", () => {
+	autoLayout();
 	determineGrid();
 	speedIncrementor();
 	numberOfFruits();
@@ -49,6 +50,7 @@ window.addEventListener("load", () => {
 	});
 	stopAllMovement();
 	clearTurns();
+
 });
 
 // GLOBAL VARIABLES ->
@@ -61,7 +63,7 @@ const fruits = [
 	"strawberry",
 ];
 const points = [10, 10, 10, 20, 20, 50];
-let speed = 16; // in ms // time to travel 1px
+let speed = 12; // in ms // time to travel 1px
 const accTime = 10 * 1000; // in ms // time after which speed will increase
 const acc = 0.5; // in ms // time by which speed will increase
 let moveUnitByInterval,
@@ -451,7 +453,7 @@ const speedIncrementor = () => {
 		speed -= acc;
 		console.log("speed: ", speed);
 
-		if (speed <= 5) {
+		if (speed <= 2) {
 			clearInterval(interval);
 		}
 	}, accTime);
@@ -486,11 +488,21 @@ const is_colliding = (div1, div2) => {
 	const d1_left = +div1.style.left.split("p")[0];
 	const d1_right =
 		+div1.style.left.split("p")[0] + +div1.style.width.split("p")[0];
+	
+	let screenWidth = window.innerWidth;
+	let screenHeight = Math.round(window.innerHeight - window.innerHeight / 10);
 
-	const d2_top = +div2.style.top.split("p")[0] + 30;
-	const d2_bottom = +div2.style.top.split("p")[0] + 40 + 30;
-	const d2_left = +div2.style.left.split("p")[0];
-	const d2_right = +div2.style.left.split("p")[0] + 40;
+	let d2_top = +div2.style.top.split("p")[0] + 30;
+	let d2_bottom = +div2.style.top.split("p")[0] + 40 + 30;
+	let d2_left = +div2.style.left.split("p")[0];
+	let d2_right = +div2.style.left.split("p")[0] + 40;
+
+	if (screenWidth <= 500 && screenHeight <= 1000) {
+		let d2_top = +div2.style.top.split("p")[0] + 30;
+		let d2_bottom = +div2.style.top.split("p")[0] + 40 + 30;
+		let d2_left = +div2.style.left.split("p")[0];
+		let d2_right = +div2.style.left.split("p")[0] + 40;
+	}
 
 	//console.log(d1_top, );
 
@@ -616,3 +628,41 @@ const clearTurns = () => {
 		}
 	});
 };
+const autoLayout = () => {
+	const units = document.querySelectorAll(".unit");
+	const head = document.querySelector(".head");
+
+	let screenWidth = window.innerWidth;
+	let screenHeight = Math.round(window.innerHeight - window.innerHeight / 10);
+
+	Array.from(units).reverse;
+	let unitSize = 10;
+	let removeUnits = 0;
+
+	if (screenHeight <= 1000 && screenWidth <= 600) {
+		unitSize = 30; 
+		console.log("small screen");
+		removeUnits = 4;
+		head.style.height = "30px";
+		head.style.width = "30px"
+	}
+
+	while (removeUnits >= 0) {
+		units[removeUnits].parentElement.removeChild(units[removeUnits]);
+		//Array.from(units)[removeUnits].
+		removeUnits--;
+	}
+
+	let i = 0;
+	
+	units.forEach(unit => {
+		if (removeUnits <= 0) {
+			unit.style.left = `${i * unitSize}px`;
+			i++;
+		}
+	});
+
+	head.style.left = `${i * unitSize}px`;
+
+
+}
