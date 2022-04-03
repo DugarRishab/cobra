@@ -48,6 +48,7 @@ window.addEventListener("load", () => {
 		determineGrid();
 	});
 	stopAllMovement();
+	clearTurns();
 });
 
 // GLOBAL VARIABLES ->
@@ -63,13 +64,17 @@ const points = [10, 10, 10, 20, 20, 50];
 let speed = 16; // in ms // time to travel 1px
 const accTime = 10 * 1000; // in ms // time after which speed will increase
 const acc = 0.5; // in ms // time by which speed will increase
-let moveUnitByInterval, moveHeadByInterval, checkFruitEatenInterval, speedIncrementorInterval;
+let moveUnitByInterval,
+	moveHeadByInterval,
+	checkFruitEatenInterval,
+	speedIncrementorInterval;
 let moveHeadEvent;
 let gameBodyLimits = {
 	width: Number,
-	height: Number
-}
+	height: Number,
+};
 let score = 0;
+let unitTurnCount = [];
 
 const globalTurns = [
 	{
@@ -88,7 +93,7 @@ const numberOfFruits = () => {
 
 	number = number - currentNumOfFruits;
 
-	number = (number == 0 && currentNumOfFruits == 1) ? 1 : number;
+	number = number == 0 && currentNumOfFruits == 1 ? 1 : number;
 	console.log(number, currentNumOfFruits);
 
 	while (number > 0) {
@@ -249,13 +254,105 @@ const moveHead = () => {
 		console.log(e.code);
 	});
 
-	
+	const detectSwap = () => {
+		let touchstartX = 0;
+		let touchstartY = 0;
+		let touchendX = 0;
+		let touchendY = 0;
+
+		const gestureZone = document.querySelector(".game-body");
+
+		gestureZone.addEventListener(
+			"touchstart",
+			function (event) {
+				touchstartX = event.changedTouches[0].screenX;
+				touchstartY = event.changedTouches[0].screenY;
+			},
+			false
+		);
+
+		gestureZone.addEventListener(
+			"touchend",
+			function (event) {
+				touchendX = event.changedTouches[0].screenX;
+				touchendY = event.changedTouches[0].screenY;
+				handleGesture();
+			},
+			false
+		);
+
+		function handleGesture() {
+			if (50 <= touchstartX - touchendX && direction != "+x") {
+				console.log("Swiped left");
+				direction = "-x";
+				const currentTurn = globalTurns[globalTurns.length - 1];
+				if (currentTurn.axis == "x") {
+					globalTurns[globalTurns.length - 1].position = xp;
+				} else {
+					globalTurns[globalTurns.length - 1].position = yp;
+				}
+				globalTurns.push({
+					axis: "x",
+					position: -100000,
+				});
+			}
+
+			if (touchendX - touchstartX >= 50 && direction != "-x") {
+				console.log("Swiped right");
+				direction = "+x";
+				const currentTurn = globalTurns[globalTurns.length - 1];
+				if (currentTurn.axis == "x") {
+					globalTurns[globalTurns.length - 1].position = xp;
+				} else {
+					globalTurns[globalTurns.length - 1].position = yp;
+				}
+				globalTurns.push({
+					axis: "x",
+					position: 100000,
+				});
+			}
+
+			if (50 <= touchstartY - touchendY && direction != "-y") {
+				console.log("Swiped up");
+				direction = "+y";
+				const currentTurn = globalTurns[globalTurns.length - 1];
+				if (currentTurn.axis == "x") {
+					globalTurns[globalTurns.length - 1].position = xp;
+				} else {
+					globalTurns[globalTurns.length - 1].position = yp;
+				}
+				globalTurns.push({
+					axis: "y",
+					position: -100000,
+				});
+			}
+
+			if (touchendY - touchstartY >= 50 && direction != "+y") {
+				console.log("Swiped down");
+				direction = "-y";
+				const currentTurn = globalTurns[globalTurns.length - 1];
+				if (currentTurn.axis == "x") {
+					globalTurns[globalTurns.length - 1].position = xp;
+				} else {
+					globalTurns[globalTurns.length - 1].position = yp;
+				}
+				globalTurns.push({
+					axis: "y",
+					position: 100000,
+				});
+			}
+
+			if (touchendY === touchstartY) {
+				console.log("Tap");
+			}
+		}
+	};
+
+	detectSwap();
 };
 const moveUnit = () => {
 	const snake = document.getElementById("snake");
 	let units = snake.querySelectorAll(".unit");
-
-	let unitTurnCount = [];
 
 	const increaseUnit = () => {
 		const turns = [...globalTurns];
@@ -295,8 +392,8 @@ const moveUnit = () => {
 			}
 		}
 
-		// extraUnit.style.left = `${xp + 10}px`;
-		// extraUnit.style.top = `${yp}px`;
+		extraUnit.style.width = `10px`;
+		extraUnit.style.height = `10px`;
 
 		snake.appendChild(extraUnit);
 		//
@@ -327,6 +424,7 @@ const moveUnit = () => {
 
 				if (turn.position == xp) {
 					unitTurnCount[unitNumber]++;
+					//clearTurns();
 				}
 			}
 
@@ -336,6 +434,7 @@ const moveUnit = () => {
 
 				if (turn.position == yp) {
 					unitTurnCount[unitNumber]++;
+					//clearTurns();
 				}
 			}
 
@@ -362,7 +461,7 @@ const checkFruitEaten = (increaseUnit) => {
 		const fruitElements = document.querySelectorAll(".fruit");
 		const snakeHead = document.querySelector(".head");
 
-		for (let i = 0; i < fruitElements.length; i++){
+		for (let i = 0; i < fruitElements.length; i++) {
 			const isColliding = is_colliding(snakeHead, fruitElements[i]);
 
 			if (isColliding) {
@@ -370,7 +469,7 @@ const checkFruitEaten = (increaseUnit) => {
 				scoreIncrementor(fruitElements[i].getAttribute("id"));
 				fruitElements[i].parentElement.removeChild(fruitElements[i]);
 				numberOfFruits();
-				
+
 				increaseUnit();
 			}
 		}
@@ -464,11 +563,10 @@ const snakeIsColliding = (div1, div2) => {
 };
 const stopAllMovement = () => {
 	const interval = new Timer(() => {
-		
 		const snakeHead = document.querySelector(".head");
 		const units = document.querySelectorAll(".unit");
 
-		for (let i = 1; i < units.length; i++){
+		for (let i = 1; i < units.length; i++) {
 			const isColliding = snakeIsColliding(snakeHead, units[i]);
 
 			if (isColliding) {
@@ -481,7 +579,16 @@ const stopAllMovement = () => {
 			}
 		}
 
-		if (+snakeHead.style.left.split('p')[0] < 0 || +snakeHead.style.top.split('p')[0] < 0 || +snakeHead.style.left.split('p')[0] > gameBodyLimits.width || +snakeHead.style.top.split('p')[0] > gameBodyLimits.height) {
+		if (
+			+snakeHead.style.left.split("p")[0] < 0 ||
+			+snakeHead.style.top.split("p")[0] < 0 ||
+			+snakeHead.style.left.split("p")[0] +
+				+snakeHead.style.width.split("p")[0] >
+				gameBodyLimits.width ||
+			+snakeHead.style.top.split("p")[0] +
+				+snakeHead.style.width.split("p")[0] >
+				gameBodyLimits.height
+		) {
 			console.log("collision: ");
 			moveHeadByInterval.stop();
 			moveUnitByInterval.stop();
@@ -494,11 +601,18 @@ const stopAllMovement = () => {
 	setInterval(() => {
 		interval.reset(speed);
 	}, accTime);
-}
+};
 const scoreIncrementor = (fruitName) => {
-
 	let i = fruits.indexOf(fruitName);
 	score += points[i];
 	const scoreElement = document.querySelector(".score .points");
 	scoreElement.innerHTML = score;
-}
+};
+const clearTurns = () => {
+	let min = unitTurnCount[0];
+	unitTurnCount.forEach((count) => {
+		if (min > count) {
+			min = count;
+		}
+	});
+};

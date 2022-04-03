@@ -41,7 +41,7 @@ body{
 	background-color: rgb(17, 17, 17);
 	height: 90vh;
 	width: 100vw;
-	-margin: auto;
+	margin: auto;
 	margin-top: 0vh;
 	border: 2px solid rgb(162, 255, 23);
 	position: relative;
