@@ -47,7 +47,7 @@ window.addEventListener("load", () => {
 	window.addEventListener("resize", () => {
 		determineGrid();
 	});
-	//stopAllMovement();
+	stopAllMovement();
 });
 
 // GLOBAL VARIABLES ->
@@ -455,15 +455,15 @@ const stopAllMovement = () => {
 		const snakeHead = document.querySelector(".head");
 		const units = document.querySelectorAll(".unit");
 
-		units.forEach((unit) => {
-			const isColliding = snakeIsColliding(snakeHead, unit);
+		for (let i = 1; i < units.length; i++){
+			const isColliding = snakeIsColliding(snakeHead, units[i]);
 
 			if (isColliding) {
 				console.log("collision: ", isColliding);
 				moveHeadByInterval.stop();
 				moveUnitByInterval.stop();
 			}
-		});
+		}
 	}, speed);
 
 	setInterval(() => {
