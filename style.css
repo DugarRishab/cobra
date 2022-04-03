@@ -95,8 +95,19 @@ body{
 	border: 0px solid red;
 	height: fit-content;
 	width: fit-content;
+	animation: fruitAnimation alternate-reverse 1s infinite ;
+	transition: 0.5s all;
 }
 .fruit img{
 	height: 30px;
 	width: 30px;
+	
+}
+@keyframes fruitAnimation{
+	0%{
+		transform: scale(1);
+	}
+	100%{
+		transform: scale(1.1);
+	}
 }

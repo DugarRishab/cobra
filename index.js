@@ -63,7 +63,8 @@ const points = [10, 10, 10, 20, 20, 50];
 let speed = 16; // in ms // time to travel 1px
 const accTime = 10 * 1000; // in ms // time after which speed will increase
 const acc = 0.5; // in ms // time by which speed will increase
-let moveUnitByInterval, moveHeadByInterval;
+let moveUnitByInterval, moveHeadByInterval, checkFruitEatenInterval, speedIncrementorInterval;
+let moveHeadEvent;
 let gameBodyLimits = {
 	width: Number,
 	height: Number
@@ -117,6 +118,7 @@ const createFruit = (fruitName) => {
 	const newFruitImage = document.createElement("img");
 
 	newFruit.classList.add("fruit");
+	newFruit.setAttribute("id", fruitName);
 	newFruitImage.src = `./img/${fruitName}.png`;
 
 	const gameBody = document.querySelector(".game-body");
@@ -189,7 +191,7 @@ const moveHead = () => {
 		moveHeadByInterval.reset(speed);
 	}, accTime);
 
-	window.addEventListener("keyup", (e) => {
+	moveHeadEvent = window.addEventListener("keyup", (e) => {
 		if (e.code === "ArrowDown" && direction != "+y") {
 			direction = "-y";
 			const currentTurn = globalTurns[globalTurns.length - 1];
@@ -346,7 +348,7 @@ const moveUnit = () => {
 	}, accTime);
 };
 const speedIncrementor = () => {
-	const interval = setInterval(() => {
+	speedIncrementorInterval = new Timer(() => {
 		speed -= acc;
 		console.log("speed: ", speed);
 
@@ -356,37 +358,26 @@ const speedIncrementor = () => {
 	}, accTime);
 };
 const checkFruitEaten = (increaseUnit) => {
-	const interval = new Timer(() => {
+	checkFruitEatenInterval = new Timer(() => {
 		const fruitElements = document.querySelectorAll(".fruit");
 		const snakeHead = document.querySelector(".head");
-
-		// fruitElements.forEach((fruit) => {
-		// 	const isColliding = is_colliding(snakeHead, fruit);
-
-		// 	if (isColliding) {
-		// 		console.log(isColliding);
-		// 		fruit.parentElement.removeChild(fruit);
-		// 		numberOfFruits();
-				
-		// 		increaseUnit();
-		// 	}
-		// });
 
 		for (let i = 0; i < fruitElements.length; i++){
 			const isColliding = is_colliding(snakeHead, fruitElements[i]);
 
 			if (isColliding) {
 				console.log(isColliding);
+				scoreIncrementor(fruitElements[i].getAttribute("id"));
 				fruitElements[i].parentElement.removeChild(fruitElements[i]);
 				numberOfFruits();
-				scoreIncrementor(points[i]);
+				
 				increaseUnit();
 			}
 		}
 	}, speed);
 
 	setInterval(() => {
-		interval.reset(speed);
+		checkFruitEatenInterval.reset(speed);
 	}, accTime);
 };
 const is_colliding = (div1, div2) => {
@@ -484,6 +475,8 @@ const stopAllMovement = () => {
 				console.log("collision: ", isColliding);
 				moveHeadByInterval.stop();
 				moveUnitByInterval.stop();
+				speedIncrementorInterval.stop();
+				checkFruitEatenInterval.stop();
 				interval.stop();
 			}
 		}
@@ -492,6 +485,8 @@ const stopAllMovement = () => {
 			console.log("collision: ");
 			moveHeadByInterval.stop();
 			moveUnitByInterval.stop();
+			speedIncrementorInterval.stop();
+			checkFruitEatenInterval.stop();
 			interval.stop();
 		}
 	}, speed);
@@ -500,8 +495,10 @@ const stopAllMovement = () => {
 		interval.reset(speed);
 	}, accTime);
 }
-const scoreIncrementor = (points) => {
-	score += points;
+const scoreIncrementor = (fruitName) => {
+
+	let i = fruits.indexOf(fruitName);
+	score += points[i];
 	const scoreElement = document.querySelector(".score .points");
 	scoreElement.innerHTML = score;
 }
