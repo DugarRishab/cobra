@@ -64,6 +64,11 @@ let speed = 16; // in ms // time to travel 1px
 const accTime = 10 * 1000; // in ms // time after which speed will increase
 const acc = 0.5; // in ms // time by which speed will increase
 let moveUnitByInterval, moveHeadByInterval;
+let gameBodyLimits = {
+	width: Number,
+	height: Number
+}
+let score = 0;
 
 const globalTurns = [
 	{
@@ -81,6 +86,8 @@ const numberOfFruits = () => {
 	const currentNumOfFruits = fruitsElement.length;
 
 	number = number - currentNumOfFruits;
+
+	number = (number == 0 && currentNumOfFruits == 1) ? 1 : number;
 	console.log(number, currentNumOfFruits);
 
 	while (number > 0) {
@@ -143,6 +150,9 @@ const determineGrid = () => {
 	const gameBody = document.querySelector(".game-body");
 	gameBody.style.width = `${rows * 40}px`;
 	gameBody.style.height = `${columns * 40}px`;
+	gameBodyLimits.width = rows * 40;
+	gameBodyLimits.height = columns * 40;
+
 	// gameBody.style.margin = 'auto';
 };
 const moveHead = () => {
@@ -350,17 +360,29 @@ const checkFruitEaten = (increaseUnit) => {
 		const fruitElements = document.querySelectorAll(".fruit");
 		const snakeHead = document.querySelector(".head");
 
-		fruitElements.forEach((fruit) => {
-			const isColliding = is_colliding(snakeHead, fruit);
+		// fruitElements.forEach((fruit) => {
+		// 	const isColliding = is_colliding(snakeHead, fruit);
+
+		// 	if (isColliding) {
+		// 		console.log(isColliding);
+		// 		fruit.parentElement.removeChild(fruit);
+		// 		numberOfFruits();
+				
+		// 		increaseUnit();
+		// 	}
+		// });
+
+		for (let i = 0; i < fruitElements.length; i++){
+			const isColliding = is_colliding(snakeHead, fruitElements[i]);
 
 			if (isColliding) {
 				console.log(isColliding);
-				fruit.parentElement.removeChild(fruit);
+				fruitElements[i].parentElement.removeChild(fruitElements[i]);
 				numberOfFruits();
-
+				scoreIncrementor(points[i]);
 				increaseUnit();
 			}
-		});
+		}
 	}, speed);
 
 	setInterval(() => {
@@ -462,11 +484,24 @@ const stopAllMovement = () => {
 				console.log("collision: ", isColliding);
 				moveHeadByInterval.stop();
 				moveUnitByInterval.stop();
+				interval.stop();
 			}
+		}
+
+		if (+snakeHead.style.left.split('p')[0] < 0 || +snakeHead.style.top.split('p')[0] < 0 || +snakeHead.style.left.split('p')[0] > gameBodyLimits.width || +snakeHead.style.top.split('p')[0] > gameBodyLimits.height) {
+			console.log("collision: ");
+			moveHeadByInterval.stop();
+			moveUnitByInterval.stop();
+			interval.stop();
 		}
 	}, speed);
 
 	setInterval(() => {
 		interval.reset(speed);
 	}, accTime);
+}
+const scoreIncrementor = (points) => {
+	score += points;
+	const scoreElement = document.querySelector(".score .points");
+	scoreElement.innerHTML = score;
 }
