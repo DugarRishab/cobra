@@ -52,11 +52,11 @@ window.addEventListener("load", () => {
 
 // GLOBAL VARIABLES ->
 const fruits = [
-	"apple",
+	"green_apple",
 	"mango",
 	"banana",
 	"cherry",
-	"pineapple",
+	"apple",
 	"strawberry",
 ];
 const points = [10, 10, 10, 20, 20, 50];
