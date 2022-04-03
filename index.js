@@ -39,7 +39,7 @@ function Timer(fn, t) {
 	};
 }
 window.addEventListener("load", () => {
-	autoLayout();
+	//autoLayout();
 	determineGrid();
 	speedIncrementor();
 	numberOfFruits();
