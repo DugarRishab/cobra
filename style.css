@@ -2,22 +2,54 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
 }
 body{
 	background-color: rgb(17, 17, 17);
+}
+.nav-bar{
+	border: 0px solid red;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: center;
+	height: 10vh;
+}
+.nav-bar .title{
+	font-size: 8vh;
+	color: rgb(162, 255, 23);
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+}
+.nav-bar .score{
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+.nav-bar .score .title{
+	font-size: 20px;
+	color: white;
+}
+.nav-bar .score .points{
+	font-size: 50px;
+	color: rgb(162, 255, 23);
+	margin-left: 10px;
 }
 .game-body{
 	background-color: rgb(17, 17, 17);
 	height: 90vh;
 	width: 100vw;
-	margin: auto;
-	margin-top: 10vh;
+	-margin: auto;
+	margin-top: 0vh;
 	border: 2px solid rgb(162, 255, 23);
 	position: relative;
+	overflow: hidden;
 }
 .snake{
 	padding: 10px;
-	border: 2px solid red;
+	border: 0px solid red;
 	height: fit-content;
 	width: fit-content;
 	-transition: 2s all linear;
@@ -41,7 +73,7 @@ body{
 	margin: auto;
 	position: absolute;
 	border: 0px solid red;
-	background: rgb(141, 223, 19);
+	background: rgb(97, 155, 11);
 	box-shadow: inset 2px 2px 15px rgba(0, 94, 5, 0.25), inset -2px -2px 15px rgba(0, 94, 5, 0.25);;
 }
 .snake .unit1{
@@ -55,12 +87,12 @@ body{
 }
 .fruits{
 	position: relative;
-	border: 2px solid blue;
+	border: 0px solid blue;
 }
 .fruit{
 	position: absolute;
 	padding: 5px;
-	border: 2px solid red;
+	border: 0px solid red;
 	height: fit-content;
 	width: fit-content;
 }
